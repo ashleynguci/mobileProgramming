@@ -15,12 +15,17 @@
     <script type="text/babel">
       const HooksMapping = () => {
         const [list, setList] = React.useState([]);
+        const [inputValue, setInputValue] = React.useState("");
 
-        const fetchData = async () => {
+        const inputChanged = event => {
+          setInputValue(event.target.value);
+        };
+        const url =
+          "https://api.github.com/search/repositories?q=" + inputValue;
+
+        const fetchSearch = async () => {
           try {
-            const response = await fetch(
-              "https://api.github.com/search/repositories?q=react"
-            );
+            const response = await fetch(url);
             const data = await response.json();
             setList(data.items);
           } catch (error) {
@@ -28,19 +33,20 @@
           }
         };
 
-        React.useEffect(() => {
-          fetchData();
-        }, []);
-
         const itemRows = list.map((number, index) => (
           <tr key={index}>
             <td>{number.full_name}</td>
             <td>{number.html_url}</td>
           </tr>
         ));
+
         return (
           <div>
             <h2>Repositories</h2>
+            <form onSubmit={fetchSearch}>
+              <input type="text" onChange={inputChanged} value={inputValue} />
+              <input type="submit" value="Find" />
+            </form>
             <table>
               <tbody>
                 <tr>
